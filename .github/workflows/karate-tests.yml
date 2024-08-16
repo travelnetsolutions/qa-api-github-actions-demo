@@ -1,0 +1,39 @@
+name: QA API AUTOMATION - TrackSTG1
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+
+    - name: Install Maven
+      run: sudo apt-get install maven -y
+
+    - name: Replace placeholders in authentication.json for TrackSTG1
+      run: |
+        sed -i '/"TrackSTG1": {/,/}/ s#"<Url>"#${{ secrets.TRACKSTG1_PROJECT_URL }}#g' src/test/resources/authentication.json
+        sed -i '/"TrackSTG1": {/,/}/ s#"<Key>"#${{ secrets.TRACKSTG1_API_KEY }}#g' src/test/resources/authentication.json
+        sed -i '/"TrackSTG1": {/,/}/ s#"<Secret>"#${{ secrets.TRACKSTG1_API_SECRET }}#g' src/test/resources/authentication.json
+        sed -i '/"TrackSTG1": {/,/}/ s#"<dbUrl>"#${{ secrets.TRACKSTG1_DB_URL }}#g' src/test/resources/authentication.json
+        sed -i '/"TrackSTG1": {/,/}/ s#"<dbName>"#${{ secrets.TRACKSTG1_DB_NAME }}#g' src/test/resources/authentication.json
+        sed -i '/"TrackSTG1": {/,/}/ s#"<dbUsername>"#${{ secrets.TRACKSTG1_DB_USERNAME }}#g' src/test/resources/authentication.json
+        sed -i '/"TrackSTG1": {/,/}/ s#"<dbPassword>"#${{ secrets.TRACKSTG1_DB_PASSWORD }}#g' src/test/resources/authentication.json
+
+    - name: Run Karate Tests
+      run: mvn clean test -Dkarate.env=TrackSTG1 -f pom.xml
