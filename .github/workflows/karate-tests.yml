@@ -27,13 +27,54 @@ jobs:
 
     - name: Replace placeholders in authentication.json for TrackSTG1
       run: |
-        sed -i '/"TrackSTG1": {/,/}/ s#"<Url>"#${{ secrets.TRACKSTG1_PROJECT_URL }}#g' src/test/resources/authentication.json
-        sed -i '/"TrackSTG1": {/,/}/ s#"<Key>"#${{ secrets.TRACKSTG1_API_KEY }}#g' src/test/resources/authentication.json
-        sed -i '/"TrackSTG1": {/,/}/ s#"<Secret>"#${{ secrets.TRACKSTG1_API_SECRET }}#g' src/test/resources/authentication.json
-        sed -i '/"TrackSTG1": {/,/}/ s#"<dbUrl>"#${{ secrets.TRACKSTG1_DB_URL }}#g' src/test/resources/authentication.json
-        sed -i '/"TrackSTG1": {/,/}/ s#"<dbName>"#${{ secrets.TRACKSTG1_DB_NAME }}#g' src/test/resources/authentication.json
-        sed -i '/"TrackSTG1": {/,/}/ s#"<dbUsername>"#${{ secrets.TRACKSTG1_DB_USERNAME }}#g' src/test/resources/authentication.json
-        sed -i '/"TrackSTG1": {/,/}/ s#"<dbPassword>"#${{ secrets.TRACKSTG1_DB_PASSWORD }}#g' src/test/resources/authentication.json
+        # Handle projectUrl
+        if [ -n "${{ secrets.TRACKSTG1_PROJECT_URL }}" ]; then
+          sed -i '/"TrackSTG1": {/,/}/ s#"<Url>"#${{ secrets.TRACKSTG1_PROJECT_URL }}#g' src/test/resources/authentication.json
+        else
+          sed -i '/"TrackSTG1": {/,/}/ s#.*"projectUrl": ".*",##g' src/test/resources/authentication.json
+        fi
+
+        # Handle apiKey
+        if [ -n "${{ secrets.TRACKSTG1_API_KEY }}" ]; then
+          sed -i '/"TrackSTG1": {/,/}/ s#"<Key>"#${{ secrets.TRACKSTG1_API_KEY }}#g' src/test/resources/authentication.json
+        else
+          sed -i '/"TrackSTG1": {/,/}/ s#.*"apiKey": ".*",##g' src/test/resources/authentication.json
+        fi
+
+        # Handle apiSecret
+        if [ -n "${{ secrets.TRACKSTG1_API_SECRET }}" ]; then
+          sed -i '/"TrackSTG1": {/,/}/ s#"<Secret>"#${{ secrets.TRACKSTG1_API_SECRET }}#g' src/test/resources/authentication.json
+        else
+          sed -i '/"TrackSTG1": {/,/}/ s#.*"apiSecret": ".*",##g' src/test/resources/authentication.json
+        fi
+
+        # Handle dbUrl
+        if [ -n "${{ secrets.TRACKSTG1_DB_URL }}" ]; then
+          sed -i '/"TrackSTG1": {/,/}/ s#"<dbUrl>"#${{ secrets.TRACKSTG1_DB_URL }}#g' src/test/resources/authentication.json
+        else
+          sed -i '/"TrackSTG1": {/,/}/ s#.*"dbUrl": ".*",##g' src/test/resources/authentication.json
+        fi
+
+        # Handle dbName
+        if [ -n "${{ secrets.TRACKSTG1_DB_NAME }}" ]; then
+          sed -i '/"TrackSTG1": {/,/}/ s#"<dbName>"#${{ secrets.TRACKSTG1_DB_NAME }}#g' src/test/resources/authentication.json
+        else
+          sed -i '/"TrackSTG1": {/,/}/ s#.*"dbName": ".*",##g' src/test/resources/authentication.json
+        fi
+
+        # Handle dbUsername
+        if [ -n "${{ secrets.TRACKSTG1_DB_USERNAME }}" ]; then
+          sed -i '/"TrackSTG1": {/,/}/ s#"<dbUsername>"#${{ secrets.TRACKSTG1_DB_USERNAME }}#g' src/test/resources/authentication.json
+        else
+          sed -i '/"TrackSTG1": {/,/}/ s#.*"dbUsername": ".*",##g' src/test/resources/authentication.json
+        fi
+
+        # Handle dbPassword
+        if [ -n "${{ secrets.TRACKSTG1_DB_PASSWORD }}" ]; then
+          sed -i '/"TrackSTG1": {/,/}/ s#"<dbPassword>"#${{ secrets.TRACKSTG1_DB_PASSWORD }}#g' src/test/resources/authentication.json
+        else
+          sed -i '/"TrackSTG1": {/,/}/ s#.*"dbPassword": ".*"##g' src/test/resources/authentication.json
+        fi
 
     - name: Run Karate Tests
       run: mvn clean test -Dkarate.env=TrackSTG1 -f pom.xml
